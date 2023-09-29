@@ -5,25 +5,28 @@ def principal():
     try:
         print("Inicio de ejecución")
 
-        # Elimina el consolidado
-        os.remove('ConsolidadoSiesaRelease.sql')
+        # Elimina el archivo consolidado si existe
+        if os.path.exists('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql'):
+            os.remove('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql')
 
         # Crea encabezado consolidado
-        with open('ConsolidadoSiesaRelease.sql', 'a') as encabezado:
+        with open('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql', 'a') as encabezado:
             sqlUse = "USE SiesaRelease;"
             encabezado.write(sqlUse)
             encabezado.write("\n")
+            encabezado.write("\n")
             encabezado.write("--- PROCEDIMIENTOS ALMACENADOS DE SIESA RELEASE ---")
+            encabezado.write("\n")
 
-        rutaArchivosSQL = "ScriptsSQLPrueba"
-        listaArchivosSQL = os.listdir('../' + rutaArchivosSQL)
+        rutaArchivosSQL = "C:/ConsolidadoSP_SiesaRelease/procedimientosalmacenados"
+        listaArchivosSQL = os.listdir(rutaArchivosSQL)
         archivos = []
 
         print('Copiando scripts...')
 
         # Recorre el directorio con los archivos SQL
         for archivo in listaArchivosSQL:
-            if os.path.isfile(os.path.join('../' + rutaArchivosSQL, archivo)) and archivo.endswith('.sql'):
+            if os.path.isfile(os.path.join(rutaArchivosSQL, archivo)) and archivo.endswith('.sql'):
                 archivos.append(archivo)
         print(archivos)
 
@@ -33,25 +36,30 @@ def principal():
 
         print("Scripts adicionados correctamente!")
 
-    except():
-        print("Ha ocurrido un error...")
+    except Exception as error:
+        print("Ha ocurrido un error: ", error)
     finally:
         print("Fin del script")
 
 
 def escribirconsolidado(rutaarchivossql, archivosql):
-    # try:
         # Lee cada archivo
-        with open('../' + rutaarchivossql + '/' + archivosql, 'r') as leido:
+        with open(f'{rutaarchivossql}/{archivosql}', 'r') as leido:
             # Abre el archivo para adicionar al consolidado
-            with open('ConsolidadoSiesaRelease.sql', 'a') as consolidado:
+            with open('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql', 'a') as consolidado:
+                consolidado.write("\n")
+                consolidado.write("--  ******* INICIO PROCEDIMIENTO DE ALMACENADO ****** --")
+                consolidado.write("\n")
                 consolidado.write("\n")
                 for linea in leido:
                     consolidado.write(linea)
                 consolidado.write("\n")
-                consolidado.write("***" * 10)
-    # except():
-    #     print("Ha ocurrido un error al escribir en el consolidado. Verifique las rutas de lectura y escritura...")
+                # consolidado.write("-- FIN PROCEDIMIENTO*************** --")
 
 
 principal()
+
+# pip install pyinstaller
+# pyinstaller  --onefile Consolidar.py
+# pip install auto-py-to-exe
+# pyinstaller --windowed --onefile --icon=./siesa.ico Consolidar.py
