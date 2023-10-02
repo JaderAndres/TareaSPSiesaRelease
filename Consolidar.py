@@ -1,5 +1,6 @@
 import os
-
+import chardet
+import glob
 
 def principal():
     try:
@@ -10,12 +11,14 @@ def principal():
             os.remove('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql')
 
         # Crea encabezado consolidado
-        with open('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql', 'a') as encabezado:
+        with open('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql', 'a', encoding="UTF-8") as encabezado:
+        ##with open('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql', 'a') as encabezado:
             sqlUse = "USE SiesaRelease;"
             encabezado.write(sqlUse)
             encabezado.write("\n")
             encabezado.write("\n")
-            encabezado.write("--- PROCEDIMIENTOS ALMACENADOS DE SIESA RELEASE ---")
+            encabezado.write(
+                "--- PROCEDIMIENTOS ALMACENADOS DE SIESA RELEASE ---")
             encabezado.write("\n")
 
         rutaArchivosSQL = "C:/ConsolidadoSP_SiesaRelease/procedimientosalmacenados"
@@ -36,25 +39,44 @@ def principal():
 
         print("Scripts adicionados correctamente!")
 
+
+        #//////////////////////////////////
+
+        # for every text file, print the file name & a gues of its file encoding
+        print("File".ljust(110), "Encoding")
+        for filename in glob.glob('C:/ConsolidadoSP_SiesaRelease/procedimientosalmacenados/*.sql'):
+        #for filename in listaArchivosSQL:
+            with open(filename, 'rb') as rawdata:
+                result = chardet.detect(rawdata.read())
+            print(filename.ljust(110), result['encoding'])
+
+        #///////////////////////////////
+
+
+    except UnicodeDecodeError as erruni:
+        print("Error: la lectura y/o escritura de los archivos deben coincidir permitiendo la compatibilidad con la codificación UTF-8: ", erruni)
     except Exception as error:
-        print("Ha ocurrido un error: ", error)
+        print("Error: ", error)
     finally:
         print("Fin del script")
 
 
 def escribirconsolidado(rutaarchivossql, archivosql):
-        # Lee cada archivo
-        with open(f'{rutaarchivossql}/{archivosql}', 'r') as leido:
-            # Abre el archivo para adicionar al consolidado
-            with open('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql', 'a') as consolidado:
-                consolidado.write("\n")
-                consolidado.write("--  ******* INICIO PROCEDIMIENTO DE ALMACENADO ****** --")
-                consolidado.write("\n")
-                consolidado.write("\n")
-                for linea in leido:
-                    consolidado.write(linea)
-                consolidado.write("\n")
-                # consolidado.write("-- FIN PROCEDIMIENTO*************** --")
+    # Lee cada archivo
+    with open(f'{rutaarchivossql}/{archivosql}', 'r', encoding="UTF-8") as leido: #si quito el encoding salen los caracteres especiales
+    #with open(f'{rutaarchivossql}/{archivosql}', 'r') as leido:
+        # Abre el archivo para adicionar al consolidado
+        with open('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql', 'a', encoding="UTF-8") as consolidado:
+        # with open('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql', 'a') as consolidado:
+            consolidado.write("\n")
+            consolidado.write(
+                "--  ******* INICIO DE PROCEDIMIENTO ALMACENADO ****** --")
+            consolidado.write("\n")
+            consolidado.write("\n")
+            for linea in leido:
+                consolidado.write(linea)
+            consolidado.write("\n")
+            # consolidado.write("-- FIN PROCEDIMIENTO*************** --")
 
 
 principal()
@@ -62,4 +84,4 @@ principal()
 # pip install pyinstaller
 # pyinstaller  --onefile Consolidar.py
 # pip install auto-py-to-exe
-# pyinstaller --windowed --onefile --icon=./siesa.ico Consolidar.py
+# pyinstaller --clean --onefile --icon=./siesa.ico Consolidar.py
