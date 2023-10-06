@@ -12,8 +12,11 @@ def principal():
 
         # Crea encabezado consolidado
         with open('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql', 'a', encoding="utf-8") as encabezado:
-            sqlUse = "USE SiesaRelease;"
+            sqlUse = "USE SiesaRelease"
+            sqlGo = "GO"
             encabezado.write(sqlUse)
+            encabezado.write("\n")
+            encabezado.write(sqlGo)
             encabezado.write("\n")
             encabezado.write("\n")
             encabezado.write(
@@ -27,9 +30,9 @@ def principal():
         print('Copiando scripts...')
 
         # Recorre el directorio con los archivos SQL
-        # for archivo in listaArchivosSQL:
-        #     if os.path.isfile(os.path.join(rutaArchivosSQL, archivo)) and archivo.endswith('.sql'):
-        #         archivos.append(archivo)
+        for archivo in listaArchivosSQL:
+            if os.path.isfile(os.path.join(rutaArchivosSQL, archivo)) and archivo.endswith('.sql'):
+                archivos.append(archivo)
         print(archivos)
 
         # Escribe en el consolidado
@@ -39,12 +42,11 @@ def principal():
         print("Scripts adicionados correctamente!")
 
         #//////////////////////////////////
-        print("File".ljust(110), "Encoding")
-        for filename in glob.glob('C:/ConsolidadoSP_SiesaRelease/procedimientosalmacenados/*.sql'):
-        #for filename in listaArchivosSQL:
-            with open(filename, 'rb') as rawdata:
-                result = chardet.detect(rawdata.read())
-            print(filename.ljust(110), result['encoding'])
+        # print("File".ljust(110), "Encoding")
+        # for filename in glob.glob('C:/ConsolidadoSP_SiesaRelease/procedimientosalmacenados/*.sql'):
+        #     with open(filename, 'rb') as rawdata:
+        #         result = chardet.detect(rawdata.read())
+        #     print(filename.ljust(110), result['encoding'])
         #///////////////////////////////
 
     except UnicodeDecodeError as erruni:
@@ -60,11 +62,11 @@ def escribirconsolidado(rutaarchivossql, archivosql):
     with open(f'{rutaarchivossql}/{archivosql}', 'r', encoding="utf-8") as leido: #si quito el encoding salen los caracteres especiales
         # Abre el archivo para adicionar al consolidado
         with open('C:/ConsolidadoSP_SiesaRelease/ConsolidadoSiesaRelease.sql', 'a', encoding="utf-8") as consolidado:
-            consolidado.write("\n")
+            # consolidado.write("\n")
             consolidado.write(
                 "--  ******* INICIO DE PROCEDIMIENTO ALMACENADO ****** --")
             consolidado.write("\n")
-            consolidado.write("\n")
+            # consolidado.write("\n")
             for linea in leido:
                 consolidado.write(linea)
             consolidado.write("\n")
